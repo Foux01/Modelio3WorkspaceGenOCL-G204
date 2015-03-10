@@ -49,7 +49,10 @@ def isAssociationClass(element):
     has a associated association. (see the Modelio metamodel
     for details)
     """
-    # TODO
+   
+   
+def isAssociation(element):
+    return False
     
  
 #---------------------------------------------------------
@@ -111,7 +114,14 @@ def umlBasicType2OCL(basicType):
     type conversions are required.
     """
     
-# etc.
+    print "class "+basicType.name
+    print "attributes"
+    for attributes in basicType.ownedAttribute:
+        print "\t"+attributes.name+" : "+attributes.type.name
+    print "end"
+    
+def umlAssociation2OCL(association):
+    return False
 
 def package2OCL(package):
     """
@@ -142,3 +152,26 @@ def package2OCL(package):
 # (1) computation of the 'package' parameter
 # (2) call of package2OCL(package)
 # (3) do something with the result
+
+
+if len(selectedElements)==0:   
+# indentation is important since they are no { }
+    print indent(4)+"Ah no, sorry. You have no selected elements."
+    print indent(8,'*')+'Play again.'
+    print indent(8,character='')+'Please!'
+
+else:
+    print selectedElements
+    classes = []   # this is a list
+    for element in selectedElements:
+        if isAssociation(element):
+            umlAssociation2OCL(element)
+        else:
+            umlBasicType2OCL(element)
+            
+    
+    
+       
+
+
+
