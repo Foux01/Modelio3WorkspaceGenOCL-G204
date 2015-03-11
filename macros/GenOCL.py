@@ -115,10 +115,21 @@ def umlBasicType2OCL(basicType):
     """
     
     print "class "+basicType.name
-    print "attributes"
-    for attributes in basicType.ownedAttribute:
-        print "\t"+attributes.name+" : "+attributes.type.name
+    if len(basicType.ownedAttribute)!=0:
+        umlAttribute2OCL(basicType.ownedAttribute)
+    if len(basicType.ownedOperation)!=0:
+        umlOperation2OCL(basicType.ownedOperation)
     print "end"
+    
+def umlAttribute2OCL(attributes):
+    print "attributes"
+    for attribute in attributes:
+        print "\t"+attribute.name+" : "+attribute.type.name
+
+def umlOperation2OCL(operations):
+    print "operations"
+    for operation in operations:
+        print "\t"+operation.name+"() : "
     
 def umlAssociation2OCL(association):
     return False
@@ -161,8 +172,6 @@ if len(selectedElements)==0:
     print indent(8,character='')+'Please!'
 
 else:
-    print selectedElements
-    classes = []   # this is a list
     for element in selectedElements:
         if isAssociation(element):
             umlAssociation2OCL(element)
