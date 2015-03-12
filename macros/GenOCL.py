@@ -76,8 +76,9 @@ def associationsInPackage(package):
         for classes in  e.origin.ownedElement :
             for assoc in classes.compositionChildren :
                 for lesAssoc in  assoc.compositionChildren:
-                    if lesAssoc not in listAssoc:
-                        listAssoc.append(lesAssoc)
+                    if isinstance(lesAssoc, Association):
+                        if lesAssoc not in listAssoc:
+                            listAssoc.append(lesAssoc)
     return listAssoc
     
 
