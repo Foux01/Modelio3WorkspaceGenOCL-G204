@@ -71,6 +71,14 @@ def associationsInPackage(package):
     arrive to a class which is recursively contained in
     a package.
     """
+    listAssoc = [] 
+    for e in package:
+        for classes in  e.origin.ownedElement :
+            for assoc in classes.compositionChildren :
+                for lesAssoc in  assoc.compositionChildren:
+                    if lesAssoc not in listAssoc:
+                        listAssoc.append(lesAssoc)
+    return listAssoc
     
 
     
@@ -114,12 +122,18 @@ def umlBasicType2OCL(basicType):
     type conversions are required.
     """
     
-    print "class "+basicType.name
+    print "class "+basicType.name,
+    umlNameClass2OCL(basicType)
+    print ""
     if len(basicType.ownedAttribute)!=0:
         umlAttribute2OCL(basicType.ownedAttribute)
     if len(basicType.ownedOperation)!=0:
         umlOperation2OCL(basicType.ownedOperation)
     print "end"
+    
+def umlNameClass2OCL(classe):
+    for parent in classe.parent:
+        print " < " + parent.superType.name,
     
 def umlAttribute2OCL(attributes):
     print "attributes"
@@ -131,8 +145,28 @@ def umlOperation2OCL(operations):
     for operation in operations:
         print "\t"+operation.name+"() : "
     
+   
 def umlAssociation2OCL(association):
-    return False
+    """
+    association IsInBedroom
+    between
+        Bathroom[0..3] role bathrooms
+        Bedroom[0..1] role bedroom
+    end
+    """
+    print "association " + association.name
+    print "between"
+    for roles in association.end:
+        umlRoles2OCL(roles)
+    print "end"
+
+def umlRoles2OCL(roles):
+    if roles.multiplicityMax == "*" or roles.multiplicityMax == roles.multiplicityMin:
+        print "\t" + roles.oppositeOwner.owner.name + "["+ roles.multiplicityMax +"] role " + roles.name
+    else :
+        print "\t" + roles.oppositeOwner.owner.name + "[" + roles.multiplicityMin + ".." + roles.multiplicityMax + "] role " +  roles.name
+    #roles.oppositeOwner.owner.name // roles.target.name
+
 
 def package2OCL(package):
     """
@@ -172,15 +206,12 @@ if len(selectedElements)==0:
     print indent(8,character='')+'Please!'
 
 else:
-    for element in selectedElements:
-        if isAssociation(element):
-            umlAssociation2OCL(element)
-        else:
+    for e in selectedElements:
+        classes = e.origin.ownedElement
+    for element in classes:
+        if isinstance(element, Class):
             umlBasicType2OCL(element)
-            
+    associations = associationsInPackage(selectedElements)
+    for association in associations:
+        umlAssociation2OCL(association)
     
-    
-       
-
-
-
