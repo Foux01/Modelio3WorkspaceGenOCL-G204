@@ -50,10 +50,6 @@ def isAssociationClass(element):
     for details)
     """
    
-   
-def isAssociation(element):
-    return False
-    
  
 #---------------------------------------------------------
 #   Application dependent helpers on the source metamodel
@@ -76,9 +72,10 @@ def associationsInPackage(package):
         for classes in  e.origin.ownedElement :
             for assoc in classes.compositionChildren :
                 for lesAssoc in  assoc.compositionChildren:
-                    if isinstance(lesAssoc, Association):
-                        if lesAssoc not in listAssoc:
-                            listAssoc.append(lesAssoc)
+                    if isinstance(lesAssoc, Association) and not isinstance(lesAssoc, ClassAssociation):
+                        if not lesAssoc.linkToClass :
+                            if lesAssoc not in listAssoc:
+                                listAssoc.append(lesAssoc)
     return listAssoc
     
 
@@ -116,31 +113,57 @@ def umlEnumeration2OCL(enumeration):
     """
     Generate USE OCL code for the enumeration
     """
-
-def umlBasicType2OCL(basicType):
+    print "enum " + enumeration.name + " {"
+    for attribut in enumeration.value :
+        if attribut == enumeration.value[-1]:
+            print "\t" + attribut.name 
+        else :
+            print "\t" + attribut.name + ","
+    print "}"
+    
+   
+def umlClasse2OCL(classe):
     """
     Generate USE OCL basic type. Note that
     type conversions are required.
     """
-    
-    print "class "+basicType.name,
-    umlNameClass2OCL(basicType)
-    print ""
-    if len(basicType.ownedAttribute)!=0:
-        umlAttribute2OCL(basicType.ownedAttribute)
-    if len(basicType.ownedOperation)!=0:
-        umlOperation2OCL(basicType.ownedOperation)
+    if classe.linkToAssociation : #gere les associationClass
+        print "associationclass "+classe.name + umlHeritageClass2OCL(classe)
+        print "between"
+        for roles in classe.linkToAssociation.associationPart.end:
+            umlRoles2OCL(roles)
+    else :
+        print "class "+classe.name + umlHeritageClass2OCL(classe)  
+    if len(classe.ownedAttribute)!=0: #gere les attributs
+        umlAttribute2OCL(classe.ownedAttribute)
+    if len(classe.ownedOperation)!=0: #gere les operations
+        umlOperation2OCL(classe.ownedOperation)
     print "end"
     
-def umlNameClass2OCL(classe):
-    for parent in classe.parent:
-        print " < " + parent.superType.name,
+def umlHeritageClass2OCL(classeBase):
+    heritage = ""
+    for parent in classeBase.parent:
+        heritage +=  " < " + parent.superType.name
+    return heritage
     
 def umlAttribute2OCL(attributes):
     print "attributes"
     for attribute in attributes:
-        print "\t"+attribute.name+" : "+attribute.type.name
+        print "\t"+attribute.name+" : "+ umlType2OCL(attribute.type) 
 
+def umlType2OCL(type):
+    """
+    Generate USE OCL basic type. Note that
+    type conversions are required.
+    """
+    if type.name == "integer" :
+        return "Integer"
+    elif type.name == "boolean" :
+        return "Boolean"
+    elif type.name == "string" :
+        return "String"
+    return type.name
+    
 def umlOperation2OCL(operations):
     print "operations"
     for operation in operations:
@@ -211,7 +234,9 @@ else:
         classes = e.origin.ownedElement
     for element in classes:
         if isinstance(element, Class):
-            umlBasicType2OCL(element)
+            umlClasse2OCL(element)
+        if isinstance(element, Enumeration):
+            umlEnumeration2OCL(element)
     associations = associationsInPackage(selectedElements)
     for association in associations:
         umlAssociation2OCL(association)
