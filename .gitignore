@@ -1,0 +1,15 @@
+*.0
+*.t
+*.exml
+*.dat
+*.style
+*.blob
+*.conf
+*.class
+*.xml
+*.jmdac
+*.class
+*.html
+*.info
+macros/lib/modelioscriptor$py.class
+*.class
