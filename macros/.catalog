@@ -1,4 +1,7 @@
 <?xml version="1.0" ?><catalog>
+<script name="Generate SQL" path="revsql.py" icon-path="" show-menu="true" show-toolbar="true">
+<description></description>
+</script>
 <script name="Sandbox" path="Sandbox.py" icon-path="" show-menu="true" show-toolbar="true">
 <description></description>
 </script>
