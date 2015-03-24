@@ -5,6 +5,7 @@
 from xml.etree.ElementTree import ElementTree
 tree = ElementTree()
 
+#tree.parse("C:\Users\MORJARET fixe\Documents\GitHub\Modelio3WorkspaceGenOCL-G204\macros\library.xml")
 tree.parse("C:\Users\laetitia\Desktop\IDM\Modelio3WorkspaceGenOCL-G204\macros\library.xml")
 
 root = tree.getroot()
@@ -48,9 +49,9 @@ for element in root:
     for table in element:
         Name = table.attrib.get("name")
         print Name
-        # createClass(Name)
+        #createClass(Name)
         for attribute in table:
-            # createAttribute(Name,attribute.
             print attribute.attrib.get("name")
+            #createAttribute(Name,attribute)
         
         
