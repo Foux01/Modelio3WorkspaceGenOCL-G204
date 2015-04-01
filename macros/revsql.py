@@ -13,9 +13,9 @@ root = tree.getroot()
 
 #creation du model UML
 
-fact= theUMLFactory()
+fact = theUMLFactory()
 myp = instanceNamed(Package,"MyPackage")
-fact.delete()
+#fact.delete()
 
 
 def createClass(nameClass):
@@ -32,26 +32,34 @@ def createClass(nameClass):
     trans.close()
         
   
-def createAttribute(nameClass,nameAttribut):
+def createAttribute(nameClass,nameAttribut,typeAttribut):
     try:
         trans = theSession().createTransaction("Attribut " + nameAttribut)
         class_ = instanceNamed(Class,nameClass)
-        a = fact.createAttribute(nameAttribut,class_)
+        a = fact.createAttribute()
+        a.setName(nameAttribut)
+        a.setOwner(class_)
+        #a.setDataType(typeAttribut)
+        a.setType(integer)
         trans.commit()
+        trans.close()
     except:
         trans.rollback()
+        trans.close()
         raise
-    trans.close()
+        
         
         
 for element in root:
-    print (element.tag)
+    #print (element.tag)
     for table in element:
         Name = table.attrib.get("name")
         print Name
-        #createClass(Name)
+        createClass(Name)
         for attribute in table:
-            print attribute.attrib.get("name")
-            #createAttribute(Name,attribute)
+            if (attribute.tag == "column"):
+                createAttribute(Name,attribute.attrib.get("name"),attribute.attrib.get("type"))
+                print attribute.attrib.get("name")
+                print attribute.attrib.get("type")
         
         
